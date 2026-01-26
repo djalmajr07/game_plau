@@ -18,12 +18,15 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from games.views import GameListView, NewGameCreateView, GameDetailView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # path('games/', include('games.urls')),
+    path('games/', GameListView.as_view(), name='game_list'),
+    path('game/<int:pk>/', GameDetailView.as_view(), name='game_detail'),
+    path('game_log/', NewGameCreateView.as_view(), name='new_gameplay'),
 ]
 
-# if settings.DEBUG:
-#     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

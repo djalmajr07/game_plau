@@ -18,16 +18,16 @@ class Game(models.Model):
     id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=200)
     console = models.ForeignKey(Console, on_delete=models.PROTECT, related_name='game_console')
-    release_year = models.IntegerField(blank=True, null=True)
     photo = models.ImageField(upload_to='media/', blank=True, null=True)
     rating = models.FloatField(blank=True, null=True)
     status = models.ForeignKey(GameStatus, on_delete=models.PROTECT, related_name='game_status')
+    release_year = models.IntegerField(blank=True, null=True)
     # price = models.FloatField(blank=True, null=True)
     # description = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return self.title
-
+        
 
 # class GameLog(models.Model):
 #     id = models.AutoField(primary_key=True)

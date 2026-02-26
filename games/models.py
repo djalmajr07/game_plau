@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 
 class Console(models.Model):
     id = models.AutoField(primary_key=True)
@@ -16,6 +17,11 @@ class GameStatus(models.Model):
 
 class Game(models.Model):
     id = models.AutoField(primary_key=True)
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE, 
+        related_name='games'
+    )
     title = models.CharField(max_length=200)
     console = models.ForeignKey(Console, on_delete=models.PROTECT, related_name='game_console')
     photo = models.ImageField(upload_to='media/', blank=True, null=True)

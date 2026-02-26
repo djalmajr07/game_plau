@@ -23,9 +23,14 @@ class NewGameCreateView(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy('game_list')
 
 
-class GameDetailView(DetailView):
+class GameDetailView(LoginRequiredMixin, DetailView):
     model = Game
     template_name = 'game_detail.html'
+
+    def get_queryset(self):
+        return self.model.objects.filter(owner=self.request.user)
+    
+    
 
 # class GameLogCreateView(CreateView):
 #     model = GameLog

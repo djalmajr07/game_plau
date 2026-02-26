@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+from django.urls import reverse_lazy 
 
 load_dotenv()
 
@@ -129,3 +130,6 @@ STATIC_URL = 'static/'
 # Media files (User uploads)
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+LOGIN_URL = reverse_lazy('login')            # uses the name of your URLpattern
+LOGOUT_URL = reverse_lazy('logout')          # optional
+LOGIN_REDIRECT_URL = reverse_lazy('game_list')

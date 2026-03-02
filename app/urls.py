@@ -19,7 +19,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from games.views import GameListView, NewGameCreateView, GameDetailView
-from accounts.views import login_view, register_view
+from accounts.views import login_view, register_view, logout_view
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
@@ -28,7 +28,7 @@ urlpatterns = [
     path('game/<int:pk>/', GameDetailView.as_view(), name='game_detail'),
     path('game_log/', NewGameCreateView.as_view(), name='new_gameplay'),
     path('login/', login_view, name='login'),
-    path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
+    path('logout/', logout_view, name='logout'),
     path('register/', register_view, name='register')
 ]
 

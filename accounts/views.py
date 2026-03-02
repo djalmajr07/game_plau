@@ -23,3 +23,7 @@ def login_view(request):
         form = AuthenticationForm()
     
     return render(request, 'login.html', {'login_form': form})
+
+def logout_view(request):
+    logout(request)
+    return redirect('home')

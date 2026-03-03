@@ -18,11 +18,11 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from games.views import GameListView, NewGameCreateView, GameDetailView
+from games.views import GameListView, NewGameCreateView, GameDetailView, landing_page
 from accounts.views import login_view, register_view, logout_view
-from django.contrib.auth import views as auth_views
 
 urlpatterns = [
+    path('', landing_page, name='landingpage'),
     path('admin/', admin.site.urls),
     path('games/', GameListView.as_view(), name='game_list'),
     path('game/<int:pk>/', GameDetailView.as_view(), name='game_detail'),

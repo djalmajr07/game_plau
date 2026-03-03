@@ -16,6 +16,7 @@ class GameStatus(models.Model):
         return self.status
 
 class Game(models.Model):
+    # Django adds id automatically, but keeping it manual is fine!
     id = models.AutoField(primary_key=True)
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL, 
@@ -23,16 +24,29 @@ class Game(models.Model):
         related_name='games'
     )
     title = models.CharField(max_length=200)
-    console = models.ForeignKey(Console, on_delete=models.PROTECT, related_name='game_console')
+    # Changed related_name to 'games' for better backward-querying
+    console = models.ForeignKey(
+        Console, 
+        on_delete=models.PROTECT, 
+        related_name='games' 
+    )
+    # Changed upload_to for cleaner file structure
     photo = models.ImageField(upload_to='media/', blank=True, null=True)
     rating = models.FloatField(blank=True, null=True)
-    status = models.ForeignKey(GameStatus, on_delete=models.PROTECT, related_name='game_status')
+    status = models.ForeignKey(
+        GameStatus, 
+        on_delete=models.PROTECT, 
+        related_name='game_statuses'
+    )
     release_year = models.IntegerField(blank=True, null=True)
-    # price = models.FloatField(blank=True, null=True)
-    # description = models.TextField(blank=True, null=True)
+    
+    landingpage_game = models.BooleanField(
+        default=False, 
+        help_text="Add the game to landing page?"
+    )
 
     def __str__(self):
-        return self.title
+        return f"{self.title} ({self.console})"
         
 
 # class GameLog(models.Model):

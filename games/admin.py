@@ -11,9 +11,10 @@ class GameStatusAdmin(admin.ModelAdmin):
     search_fields = ('status',)
 
 class GameAdmin(admin.ModelAdmin):
-    list_display = ('title', 'console', 'release_year', 'rating', 'status')
+    list_display = ('title', 'console', 'release_year', 'rating', 'status', 'landingpage_game')
     search_fields = ('title', 'console__name', 'status__status')
     list_filter = ('console', 'status')
+    list_editable = ('landingpage_game',)
 
 admin.site.register(Console, ConsoleAdmin)
 admin.site.register(GameStatus, GameStatusAdmin)

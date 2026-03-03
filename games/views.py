@@ -30,7 +30,9 @@ class GameDetailView(LoginRequiredMixin, DetailView):
     def get_queryset(self):
         return self.model.objects.filter(owner=self.request.user)
     
-    
+def landing_page(request):
+    featured_games = Game.objects.filter(landingpage_game=True)
+    return render(request, 'landing_page.html', {'games': featured_games})
 
 # class GameLogCreateView(CreateView):
 #     model = GameLog

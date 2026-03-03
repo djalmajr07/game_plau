@@ -1,118 +1,79 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <style>
-    /* I changed .car-grid to .game-grid to match your HTML below */
+<style>
+    body { background-color: #121212; color: white; }
+    
     .game-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 25px;
       margin: 0 auto;
       max-width: 1200px;
-      padding: 20px;
+      padding: 40px 20px;
+      align-items: start; /* Fixes the giant gray space issue */
     }
 
-    /* I changed .car-card to .game-card for better naming */
     .game-card {
-      background-color: #e3e1e1;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-      border-radius: 10px;
+      background-color: #1e1e1e;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+      border-radius: 8px;
       overflow: hidden;
       text-align: center;
-      transition: all 0.3s ease;
-      height: 100%; /* Ensures all cards in a row are the same height */
+      transition: transform 0.2s ease;
+      height: auto;
     }
 
-    .game-card:hover {
-        cursor: pointer;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-        transform: translateY(-2px);
-    }
+    .game-card:hover { transform: scale(1.03); }
 
-    .game-card img {
+    .game-cover {
       width: 100%;
-      height: 200px;
+      aspect-ratio: 2/3;
       object-fit: cover;
+      display: block;
     }
+
+    .card-body { padding: 15px; }
 
     .game-card h2 {
-      font-size: 1.5rem;
-      margin: 10px;
-      color: #333; /* Keeps title visible inside the link */
+      font-size: 1.1rem;
+      margin: 0 0 5px 0;
+      color: #fff;
     }
 
     .game-card p {
-      font-size: 1rem;
-      margin-bottom: 10px;
-      color: #666;
+      font-size: 0.85rem;
+      color: #aaa;
+      margin: 0;
     }
 
-    @media (max-width: 768px) {
-      .game-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
+    form { padding: 20px; text-align: center; }
+    input[type="text"] { padding: 10px; border-radius: 4px; border: none; }
+    button { background-color: #0096c7; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; }
+</style>
 
-    @media (max-width: 480px) {
-      .game-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    /* Search Form Styling */
-    form {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-bottom: 20px;
-        padding: 20px;
-    }
-
-    input[type="text"] {
-        padding: 10px;
-        font-size: 16px;
-        border: 2px solid #e3e1e1;
-        border-radius: 4px;
-        margin-right: 10px;
-    }
-
-    button[type="submit"] {
-        background-color: #0096c7;
-        color: #fff;
-        border: none;
-        padding: 10px 20px;
-        font-size: 16px;
-        border-radius: 4px;
-        cursor: pointer;
-    }
-
-    a {
-      text-decoration: none;
-    }
-  </style>
-
-  <form method="GET" action="{% url 'game_list' %}">
+<form method="GET" action="{% url 'game_list' %}">
     <input type="text" name="search" placeholder="Buscar jogo ...">
     <button type="submit">Buscar</button>
-  </form>
+</form>
 
-  <div class="game-grid">
-    {% if games %}
-      {% for game in games %}
-        <a href="{% url 'game_detail' game.pk %}">
-          <div class="game-card">
-            {% if game.photo %}
-              <img src="{{ game.photo.url }}" alt="{{ game.title }} - {{ game.console }}">
+<div class="game-grid">
+    {% for game in games %}
+    <a href="{% url 'game_detail' game.pk %}" style="text-decoration: none;">
+        <div class="game-card">
+            {% if game.photo_url %}
+                <img class="game-cover" src="{{ game.photo_url }}" alt="{{ game.title }}">
             {% else %}
-              <img src="https://via.placeholder.com/300x200?text=No+Image" alt="{{ game.title }} - {{ game.console }}">
+                <img class="game-cover" src="https://via.placeholder.com/300x450?text=No+Cover" alt="No Cover">
             {% endif %}
-            <h2>{{ game.title }}</h2>
-            <p>{{ game.console }} - {{ game.release_year }}</p>
-          </div>
-        </a>
-      {% endfor %}
-    {% else %}
-      <p style="grid-column: 1 / -1; text-align: center;">Nenhum jogo encontrado.</p>
-    {% endif %}
-  </div>
+            <div class="card-body">
+                <h2>{{ game.title }}</h2>
+                <p>{{ game.console.name }} {% if game.release_year %}- {{ game.release_year }}{% endif %}</p>
+            </div>
+        </div>
+    </a>
+    {% empty %}
+    <p style="grid-column: 1/-1; text-align: center;">Nenhum jogo encontrado.</p>
+    {% endfor %}
+</div>
 {% endblock %}

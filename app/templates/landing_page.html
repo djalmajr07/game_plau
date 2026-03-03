@@ -3,6 +3,17 @@
 {% block title %}Welcome to Game Plau{% endblock %}
 
 {% block content %}
+  <style>
+    /* make cover images render at a consistent ratio and fill their container */
+    .game-cover {
+        width: 100%;
+        aspect-ratio: 2/3;          /* typical cover ratio */
+        object-fit: cover;          /* crop/scale to fill without distortion */
+        display: block;
+        background: #eee;           /* light grey while loading */
+    }
+  </style>
+
   <section style="padding: 2rem; max-width: 1200px; margin: 0 auto; font-family: sans-serif;">
     <div style="text-align: center; margin-bottom: 3rem;">
         <h1 style="font-size: 2.5rem; color: #333;">Welcome to Game Plau</h1>
@@ -30,9 +41,9 @@
             </div>
 
             {% if game.photo %}
-                <img src="{{ game.photo.url }}" alt="{{ game.title }}" style="width: 100%; height: 180px; object-fit: cover;">
+                <img class="game-cover" src="{{ game.photo.url }}" alt="{{ game.title }}">
             {% else %}
-                <img src="https://via.placeholder.com/300x180?text=No+Image" alt="No Image" style="width: 100%; height: 180px; object-fit: cover;">
+                <img class="game-cover" src="https://via.placeholder.com/300x450?text=No+Image" alt="No Image">
             {% endif %}
 
             <div style="padding: 15px;">

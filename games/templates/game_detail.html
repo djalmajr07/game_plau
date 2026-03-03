@@ -2,7 +2,7 @@
 
 {% block content %}
   <style>
-    .car-card {
+    .game-card {
       background-color: #e3e1e1;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
       border-radius: 10px;
@@ -10,28 +10,29 @@
       text-align: center;
       transition: all 0.3s ease;
       max-width: 500px;
-      margin: 20px auto 0;
-      margin-bottom: 20px;
+      margin: 20px auto 20px;
     }
 
-    .car-card:hover {
+    .game-card:hover {
       cursor: pointer;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
       transform: translateY(-2px);
     }
 
-    .car-card img {
+    .game-cover {
       width: 100%;
-      height: 200px;
+      aspect-ratio: 2/3;
       object-fit: cover;
+      display: block;
+      background: #eee;
     }
 
-    .car-card h2 {
+    .game-card h2 {
       font-size: 1.5rem;
       margin: 10px;
     }
 
-    .car-card p {
+    .game-card p {
       font-size: 1rem;
       margin-bottom: 10px;
     }
@@ -81,13 +82,12 @@
   </style>
   <div class="game-card">
       {% if object.photo %}
-        <img src="{{ object.photo.url }}" alt="{{ object.title }} - {{ object.console }}">
+        <img class="game-cover" src="{{ object.photo.url }}" alt="{{ object.title }} - {{ object.console }}">
       {% else %}
-        <img src="https://via.placeholder.com/300x200?text=No+Image" alt="{{ object.title }} - {{ object.console }}">
+        <img class="game-cover" src="https://via.placeholder.com/300x450?text=No+Image" alt="{{ object.title }} - {{ object.console }}">
       {% endif %}
       <h2>{{ object.title }}</h2>
       <p><strong>Console:</strong> {{ object.console }}</p>
       <p><strong>Ano de lançamento:</strong> {{ object.release_year }}</p>
-
   </div>
 {% endblock %}

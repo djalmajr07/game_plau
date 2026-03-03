@@ -18,10 +18,13 @@ class GameListView(LoginRequiredMixin, ListView):
 
 class NewGameCreateView(LoginRequiredMixin, CreateView):
     model = Game
-    fields = ['title', 'console', 'release_year', 'photo', 'rating', 'status']
+    fields = ['title', 'console', 'status']
     template_name = 'new_game_log.html'
     success_url = reverse_lazy('game_list')
 
+    def form_valid(self, form):
+        form.instance.owner = self.request.user
+        return super().form_valid(form)
 
 class GameDetailView(LoginRequiredMixin, DetailView):
     model = Game

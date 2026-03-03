@@ -127,9 +127,15 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-# Media files (User uploads)
+# Media files
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
-LOGIN_URL = reverse_lazy('login')            # uses the name of your URLpattern
-LOGOUT_URL = reverse_lazy('logout')          # optional
-LOGIN_REDIRECT_URL = reverse_lazy('game_list')
+
+# Auth Redirects
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/games/'
+LOGOUT_REDIRECT_URL = '/login/'
+
+# --- IGDB API SETTINGS ---
+IGDB_CLIENT_ID = os.getenv('IGDB_CLIENT_ID')
+IGDB_CLIENT_SECRET = os.getenv('IGDB_CLIENT_SECRET')

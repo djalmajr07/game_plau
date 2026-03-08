@@ -96,6 +96,157 @@
   .btn-back:hover {
     background-color: #555555;
   }
+
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+  }
+
+  .modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-content {
+    background-color: #1a1a1a;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #333333;
+    max-width: 450px;
+    width: 90%;
+    max-height: 80vh;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.9);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .modal-content h2 {
+    color: #ffffff;
+    margin: 0 0 20px 0;
+  }
+
+  .modal-content label {
+    display: block;
+    color: #b0b0b0;
+    margin: 15px 0 5px 0;
+    font-weight: 500;
+  }
+
+  .modal-content input[type="text"],
+  .modal-content input[type="url"] {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0 15px 0;
+    border: 1px solid #333333;
+    border-radius: 4px;
+    background-color: #2a2a2a;
+    color: #ffffff;
+    box-sizing: border-box;
+  }
+
+  .search-input-wrapper {
+    position: relative;
+  }
+
+  .cover-results {
+    margin-top: 10px;
+    flex: 1;
+    max-height: calc(80vh - 250px);
+    overflow-y: auto;
+    border: 1px solid #333333;
+    border-radius: 4px;
+    background-color: #0f0f0f;
+  }
+
+  .cover-item {
+    padding: 10px;
+    border-bottom: 1px solid #333333;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .cover-item:hover {
+    background-color: #1a1a1a;
+  }
+
+  .cover-item.selected {
+    background-color: #0096c7;
+  }
+
+  .cover-thumbnail {
+    width: 40px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  .cover-info {
+    flex: 1;
+    color: #b0b0b0;
+    font-size: 0.9rem;
+  }
+
+  .no-results {
+    padding: 15px;
+    text-align: center;
+    color: #b0b0b0;
+  }
+
+  .modal-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    flex-shrink: 0;
+  }
+
+  .modal-buttons button {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+  }
+
+  .modal-buttons .btn-save {
+    background-color: #0096c7;
+    color: white;
+  }
+
+  .modal-buttons .btn-save:hover {
+    background-color: #32bbe8;
+  }
+
+  .modal-buttons .btn-cancel {
+    background-color: #444444;
+    color: white;
+  }
+
+  .modal-buttons .btn-cancel:hover {
+    background-color: #555555;
+  }
+
+  .btn-secondary {
+    background-color: #666666;
+    color: white;
+  }
+
+  .btn-secondary:hover {
+    background-color: #777777;
+  }
+
 </style>
 
 <div class="game-detail">
@@ -131,12 +282,117 @@
       <span class="info-value">{{ object.release_year }}</span>
     </div>
     {% endif %}
+
+    {% if object.completion_date %}
+    <div class="info-row">
+      <span class="info-label">Data de Conclusão</span>
+      <span class="info-value">{{ object.completion_date|date:"d/m/Y" }}</span>
+    </div>
+    {% endif %}
   </div>
 
   <div class="action-buttons">
     <a href="{% url 'edit_game' object.pk %}" class="btn btn-primary">✏️ Editar</a>
+    <button onclick="openEditCoverModal()" class="btn btn-secondary">🖼️ Editar Capa</button>
     <a href="{% url 'delete_game' object.pk %}" class="btn btn-danger">🗑️ Deletar</a>
   </div>
 </div>
+
+<!-- Edit Cover Modal -->
+<div id="editCoverModal" class="modal">
+  <div class="modal-content">
+    <h2>Editar Capa do Jogo</h2>
+    <form id="coverForm" method="POST" action="{% url 'edit_game' object.pk %}">
+      {% csrf_token %}
+      <label for="coverSearch">Pesquisar Capa:</label>
+      <div class="search-input-wrapper">
+        <input type="text" id="coverSearch" placeholder="Pesquise por capas..." autocomplete="off">
+      </div>
+      <div id="coverResults" class="cover-results" style="display: none;"></div>
+      <input type="hidden" id="selectedCoverUrl" name="photo_url" value="{{ object.photo_url }}">
+      
+      <div class="modal-buttons">
+        <button type="submit" class="btn-save" id="saveCoverBtn" disabled>Salvar</button>
+        <button type="button" class="btn-cancel" onclick="closeEditCoverModal()">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+function openEditCoverModal() {
+  document.getElementById('editCoverModal').classList.add('active');
+  document.getElementById('coverSearch').focus();
+  document.getElementById('coverSearch').value = '';
+  document.getElementById('coverResults').style.display = 'none';
+  document.getElementById('saveCoverBtn').disabled = true;
+}
+
+function closeEditCoverModal() {
+  document.getElementById('editCoverModal').classList.remove('active');
+}
+
+// Close modal when clicking outside of it
+window.onclick = function(event) {
+  const modal = document.getElementById('editCoverModal');
+  if (event.target == modal) {
+    closeEditCoverModal();
+  }
+}
+
+// Search for covers
+document.getElementById('coverSearch').addEventListener('input', async function() {
+  const query = this.value.trim();
+  const resultsDiv = document.getElementById('coverResults');
+  
+  if (!query) {
+    resultsDiv.style.display = 'none';
+    return;
+  }
+
+  try {
+    const response = await fetch(`/api/search-covers/?title=${encodeURIComponent(query)}`);
+    const data = await response.json();
+    
+    if (data.covers && data.covers.length > 0) {
+      let html = '';
+      data.covers.forEach(cover => {
+        const imageUrl = cover.url || '';
+        const type = cover.type || 'cover';
+        const title = `{{ object.title }} (${type})`;
+        html += `
+          <div class="cover-item" onclick="selectCover('${imageUrl.replace(/'/g, "\\'")}')">
+            ${imageUrl ? `<img src="${imageUrl}" alt="${title}" class="cover-thumbnail">` : '<div class="cover-thumbnail" style="background-color: #333;"></div>'}
+            <div class="cover-info">${type === 'cover' ? 'Capa Principal' : 'Arte Alternativa'}</div>
+          </div>
+        `;
+      });
+      resultsDiv.innerHTML = html;
+      resultsDiv.style.display = 'block';
+    } else {
+      resultsDiv.innerHTML = '<div class="no-results">Nenhuma capa encontrada</div>';
+      resultsDiv.style.display = 'block';
+    }
+  } catch (error) {
+    console.error('Erro ao buscar capas:', error);
+    resultsDiv.innerHTML = '<div class="no-results">Erro ao buscar capas</div>';
+    resultsDiv.style.display = 'block';
+  }
+});
+
+// Select a cover
+function selectCover(imageUrl) {
+  if (!imageUrl) return;
+  
+  document.getElementById('selectedCoverUrl').value = imageUrl;
+  document.getElementById('saveCoverBtn').disabled = false;
+  
+  // Visual feedback
+  document.querySelectorAll('.cover-item').forEach(item => {
+    item.classList.remove('selected');
+  });
+  event.currentTarget.classList.add('selected');
+}
+</script>
 
 {% endblock %}

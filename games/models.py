@@ -37,6 +37,7 @@ class Game(models.Model):
         related_name='media' 
     )
     release_year = models.IntegerField(blank=True, null=True)
+    completion_date = models.DateField(blank=True, null=True, help_text="Date when the game was completed")
     landingpage_game = models.BooleanField(
         default=False, 
         help_text="Add the game to landing page?"

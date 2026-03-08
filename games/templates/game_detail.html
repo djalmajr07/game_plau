@@ -3,8 +3,9 @@
 {% block content %}
   <style>
     .game-card {
-      background-color: #e3e1e1;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      background-color: #1a1a1a;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+      border: 1px solid #333333;
       border-radius: 10px;
       overflow: hidden;
       text-align: center;
@@ -15,8 +16,9 @@
 
     .game-card:hover {
       cursor: pointer;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 4px 15px rgba(0, 150, 199, 0.3);
       transform: translateY(-2px);
+      border-color: #0096c7;
     }
 
     .game-cover {
@@ -24,17 +26,19 @@
       aspect-ratio: 2/3;
       object-fit: cover;
       display: block;
-      background: #eee;
+      background: #2a2a2a;
     }
 
     .game-card h2 {
       font-size: 1.5rem;
       margin: 10px;
+      color: #ffffff;
     }
 
     .game-card p {
       font-size: 1rem;
       margin-bottom: 10px;
+      color: #b0b0b0;
     }
 
     .buttons-container {
@@ -55,10 +59,11 @@
       cursor: pointer;
       transition: background-color 0.3s ease-in-out;
       margin: 0 10px;
+      text-decoration: none !important;
     }
 
     .btn:hover {
-      background-color: #108eb8;
+      background-color: #32bbe8;
     }
 
     .btn-danger {
@@ -67,11 +72,11 @@
     }
 
     .btn-danger:hover {
-      background-color: #d2221c;
+      background-color: #ff6b6b;
     }
 
     .error-message {
-      color: #d9534f;
+      color: #ff6b6b;
       font-size: 14px;
       margin-top: 5px;
     }

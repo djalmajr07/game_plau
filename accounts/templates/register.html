@@ -1,29 +1,133 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <form method="post">
-        {% csrf_token %}
+    <style>
+        .form-container {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 30px;
+            background-color: #1a1a1a;
+            border: 1px solid #333333;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
 
-        <div class="form-group">
-            {{ user_form.username.errors }}
-            <label>Usuario:</label>
-            {{ user_form.username }}
-        </div>
+        .form-container h2 {
+            color: #ffffff;
+            text-align: center;
+            margin-bottom: 30px;
+            margin-top: 0;
+        }
 
-        <div class="form-group">
-            {{ user_form.password1.errors }}
-            <label>Senha:</label>
-            {{ user_form.password1 }}
-        </div>
+        .form-group {
+            margin-bottom: 20px;
+        }
 
-        <div class="form-group">
-            {{ user_form.password2.errors }}
-            <label>Confirmar Senha:</label>
-            {{ user_form.password2 }}
-        </div>
+        label {
+            color: #ffffff;
+            font-weight: 500;
+            display: block;
+            margin-bottom: 8px;
+        }
 
-        <div class="form-group">
-            <input type="submit" value="Register"/>
+        input[type="text"],
+        input[type="password"],
+        input[type="email"] {
+            width: 100%;
+            padding: 10px 12px;
+            background-color: #2a2a2a;
+            border: 1px solid #333333;
+            border-radius: 4px;
+            color: #ffffff;
+            font-size: 14px;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus,
+        input[type="email"]:focus {
+            border-color: #0096c7;
+            outline: none;
+            box-shadow: 0 0 8px rgba(0, 150, 199, 0.3);
+        }
+
+        input[type="submit"] {
+            width: 100%;
+            padding: 12px;
+            background-color: #0096c7;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #32bbe8;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 15px 0;
+            color: #ff6b6b;
+            font-size: 0.85rem;
+        }
+
+        ul li {
+            margin-bottom: 5px;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #b0b0b0;
+            font-size: 0.9rem;
+        }
+
+        .login-link a {
+            color: #0096c7;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .login-link a:hover {
+            color: #32bbe8;
+        }
+    </style>
+
+    <div class="form-container">
+        <h2>Criar Conta</h2>
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="form-group">
+                {{ user_form.username.errors }}
+                <label for="{{ user_form.username.id_for_label }}">Usuário:</label>
+                {{ user_form.username }}
+            </div>
+
+            <div class="form-group">
+                {{ user_form.password1.errors }}
+                <label for="{{ user_form.password1.id_for_label }}">Senha:</label>
+                {{ user_form.password1 }}
+            </div>
+
+            <div class="form-group">
+                {{ user_form.password2.errors }}
+                <label for="{{ user_form.password2.id_for_label }}">Confirmar Senha:</label>
+                {{ user_form.password2 }}
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Registrar"/>
+            </div>
+        </form>
+        <div class="login-link">
+            Já possui conta? <a href="{% url 'login' %}">Faça login aqui</a>
         </div>
-    </form>
+    </div>
 {% endblock %}

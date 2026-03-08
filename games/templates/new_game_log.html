@@ -1,13 +1,110 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <table>
-            {{ form.as_table}}
-        </table>
+    <style>
+        .form-container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 30px;
+            background-color: #1a1a1a;
+            border: 1px solid #333333;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
 
-        <input type="submit" value="Add Jogo" class ="btn btn-primary"/>
-        
-    </form>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table tr td {
+            padding: 12px;
+            border-bottom: 1px solid #333333;
+        }
+
+        table tr:last-child td {
+            border-bottom: none;
+        }
+
+        label {
+            color: #ffffff;
+            font-weight: 500;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="email"],
+        input[type="password"],
+        input[type="date"],
+        input[type="file"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 8px 12px;
+            background-color: #2a2a2a;
+            border: 1px solid #333333;
+            border-radius: 4px;
+            color: #ffffff;
+            font-family: inherit;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        input[type="email"]:focus,
+        input[type="password"]:focus,
+        input[type="date"]:focus,
+        input[type="file"]:focus,
+        select:focus,
+        textarea:focus {
+            border-color: #0096c7;
+            outline: none;
+            box-shadow: 0 0 8px rgba(0, 150, 199, 0.3);
+        }
+
+        input[type="submit"] {
+            background-color: #0096c7;
+            color: #ffffff;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #32bbe8;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            color: #ff6b6b;
+            font-size: 0.9rem;
+        }
+
+        ul li {
+            margin-bottom: 5px;
+        }
+    </style>
+
+    <div class="form-container">
+        <h2 style="color: #ffffff; margin-top: 0;">Cadastrar Nova Gameplay</h2>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <table>
+                {{ form.as_table}}
+            </table>
+
+            <input type="submit" value="Add Jogo" class="btn btn-primary"/>
+        </form>
+    </div>
 {% endblock %}

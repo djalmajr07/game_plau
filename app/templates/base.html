@@ -7,32 +7,35 @@
   <style>
     body {
         font-family: 'Open Sans', sans-serif;
-        background-color: #f7f7f7;
-        color: #333;
+        background-color: #0f0f0f;
+        color: #ffffff;
         margin: 0;
         padding: 0;
     }
 
     header {
-        background-color: #0096c7;
+        background-color: #1a1a1a;
         color: #fff;
         text-align: center;
+        border-bottom: 1px solid #333333;
     }
 
     footer {
-        background-color: #ccc;
-        color: #333;
+        background-color: #1a1a1a;
+        color: #b0b0b0;
         padding: 20px;
         text-align: center;
+        border-top: 1px solid #333333;
     }
 
     nav {
-        background-color: #0096c7;
+        background-color: #1a1a1a;
         color: #fff;
         height: 50px;
         display: flex;
         justify-content: space-between;
         align-items: center;
+        border-bottom: 1px solid #333333;
     }
 
     nav ul {
@@ -47,7 +50,7 @@
     }
 
     nav ul li a {
-        color: #fff;
+        color: #b0b0b0;
         text-decoration: none;
         font-size: 16px;
         padding: 15px;
@@ -55,15 +58,40 @@
     }
 
     nav ul li a:hover {
-        background-color: #32bbe8;
+        background-color: #0096c7;
+        color: #ffffff;
     }
 
     nav ul li.active a {
-        background-color: #666;
+        background-color: #0096c7;
+        color: #ffffff;
     }
 
     nav ul li.active a:hover {
-        background-color: #999;
+        background-color: #32bbe8;
+    }
+
+    button, input[type="submit"] {
+        background-color: #0096c7;
+        color: #ffffff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    button:hover, input[type="submit"]:hover {
+        background-color: #32bbe8;
+    }
+
+    a {
+        color: #0096c7;
+        text-decoration: none;
+    }
+
+    a:hover {
+        color: #32bbe8;
     }
 
   </style>

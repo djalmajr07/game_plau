@@ -8,13 +8,62 @@ class GameListView(LoginRequiredMixin, ListView):
     model = Game
     template_name = 'home.html'
     context_object_name = 'games'
+    paginate_by = 50
 
     def get_queryset(self):
         games = Game.objects.filter(owner=self.request.user).order_by('title')
-        search = self.request.GET.get('search')
+        tab = self.request.GET.get('tab', 'played')
+        search = self.request.GET.get('search', '').strip()
+        
+        # Filter by tab
+        if tab == 'playing':
+            games = games.filter(status__status='jogando')
+        elif tab == 'played':
+            games = games.filter(status__status__in=['platinado', 'historia completa'])
+        elif tab == 'by_year':
+            year = self.request.GET.get('year')
+            if year:
+                games = games.filter(release_year=year)
+        elif tab == 'by_console':
+            console_id = self.request.GET.get('console')
+            if console_id:
+                games = games.filter(console_id=console_id)
+        elif tab == 'next':
+            games = games.filter(status__status='na lista de proximo')
+        
+        # Apply search filter
         if search:
             games = games.filter(title__icontains=search)
+        
         return games
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user_games = Game.objects.filter(owner=self.request.user)
+        
+        # Build tab counts and data
+        context['active_tab'] = self.request.GET.get('tab', 'played')
+        context['search_query'] = self.request.GET.get('search', '').strip()
+        
+        # Tab counts
+        context['count_playing'] = user_games.filter(status__status='jogando').count()
+        context['count_played'] = user_games.filter(status__status__in=['platinado', 'historia completa']).count()
+        context['count_next'] = user_games.filter(status__status='na lista de proximo').count()
+        
+        # Get unique years and consoles for filters
+        context['years'] = sorted(
+            set(user_games.filter(release_year__isnull=False).values_list('release_year', flat=True)),
+            reverse=True
+        )
+        context['consoles'] = user_games.values_list('console', flat=True).distinct()
+        from .models import Console
+        context['console_objects'] = Console.objects.filter(id__in=context['consoles'])
+        
+        # Selected filters
+        context['selected_year'] = self.request.GET.get('year')
+        context['selected_console'] = self.request.GET.get('console')
+        
+        return context
 
 class NewGameCreateView(LoginRequiredMixin, CreateView):
     model = Game

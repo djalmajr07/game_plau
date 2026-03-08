@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <style>
+        .form-container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 30px;
+            background-color: #1a1a1a;
+            border: 1px solid #333333;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .form-container h2 {
+            color: #ffffff;
+            margin-top: 0;
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table tr td {
+            padding: 12px;
+            border-bottom: 1px solid #333333;
+        }
+
+        table tr:last-child td {
+            border-bottom: none;
+        }
+
+        label {
+            color: #ffffff;
+            font-weight: 500;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 8px 12px;
+            background-color: #2a2a2a;
+            border: 1px solid #333333;
+            border-radius: 4px;
+            color: #ffffff;
+            font-family: inherit;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        select:focus,
+        textarea:focus {
+            border-color: #0096c7;
+            outline: none;
+            box-shadow: 0 0 8px rgba(0, 150, 199, 0.3);
+        }
+
+        input[type="checkbox"] {
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            color: #ffffff;
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            margin: 0 10px 0 0;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .btn-save {
+            flex: 1;
+            background-color: #0096c7;
+            color: #ffffff;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-save:hover {
+            background-color: #32bbe8;
+        }
+
+        .btn-cancel {
+            flex: 1;
+            background-color: #555555;
+            color: #ffffff;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            text-decoration: none;
+            text-align: center;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-cancel:hover {
+            background-color: #777777;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            color: #ff6b6b;
+            font-size: 0.9rem;
+        }
+
+        ul li {
+            margin-bottom: 5px;
+        }
+    </style>
+
+    <div class="form-container">
+        <h2>{% if form.instance.pk %}Editar Jogo{% else %}Adicionar Jogo{% endif %}</h2>
+        
+        <form method="post">
+            {% csrf_token %}
+            <table>
+                {{ form.as_table}}
+            </table>
+
+            <div class="button-group">
+                <button type="submit" class="btn-save">
+                    {% if form.instance.pk %}Atualizar{% else %}Adicionar{% endif %} Jogo
+                </button>
+                <a href="{% url 'game_detail' form.instance.pk %}" class="btn-cancel">Cancelar</a>
+            </div>
+        </form>
+    </div>
+{% endblock %}

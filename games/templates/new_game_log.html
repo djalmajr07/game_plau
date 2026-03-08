@@ -12,9 +12,95 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
         }
 
+        .form-container h2 {
+            color: #ffffff;
+            margin-top: 0;
+        }
+
+        .search-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        #game-search {
+            width: 100%;
+            padding: 12px;
+            background-color: #2a2a2a;
+            border: 1px solid #333333;
+            border-radius: 4px;
+            color: #ffffff;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+
+        #game-search:focus {
+            border-color: #0096c7;
+            outline: none;
+            box-shadow: 0 0 8px rgba(0, 150, 199, 0.3);
+        }
+
+        .autocomplete-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: #2a2a2a;
+            border: 1px solid #0096c7;
+            border-top: none;
+            border-radius: 0 0 4px 4px;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(0, 150, 199, 0.2);
+        }
+
+        .autocomplete-list.show {
+            display: block;
+        }
+
+        .autocomplete-item {
+            padding: 12px;
+            border-bottom: 1px solid #333333;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: background-color 0.2s ease;
+        }
+
+        .autocomplete-item:hover {
+            background-color: #333333;
+        }
+
+        .autocomplete-item img {
+            width: 40px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 3px;
+        }
+
+        .autocomplete-item-text {
+            flex: 1;
+            color: #b0b0b0;
+        }
+
+        .autocomplete-item-title {
+            color: #ffffff;
+            font-weight: 500;
+            margin-bottom: 3px;
+        }
+
+        .autocomplete-item-year {
+            font-size: 0.85rem;
+            color: #777;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
+            margin-top: 20px;
         }
 
         table tr td {
@@ -35,10 +121,6 @@
 
         input[type="text"],
         input[type="number"],
-        input[type="email"],
-        input[type="password"],
-        input[type="date"],
-        input[type="file"],
         select,
         textarea {
             width: 100%;
@@ -47,17 +129,12 @@
             border: 1px solid #333333;
             border-radius: 4px;
             color: #ffffff;
-            font-family: inherit;
             box-sizing: border-box;
             transition: border-color 0.3s ease;
         }
 
         input[type="text"]:focus,
         input[type="number"]:focus,
-        input[type="email"]:focus,
-        input[type="password"]:focus,
-        input[type="date"]:focus,
-        input[type="file"]:focus,
         select:focus,
         textarea:focus {
             border-color: #0096c7;
@@ -82,29 +159,103 @@
         input[type="submit"]:hover {
             background-color: #32bbe8;
         }
-
-        ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            color: #ff6b6b;
-            font-size: 0.9rem;
-        }
-
-        ul li {
-            margin-bottom: 5px;
-        }
     </style>
 
     <div class="form-container">
-        <h2 style="color: #ffffff; margin-top: 0;">Cadastrar Nova Gameplay</h2>
-        <form method="post" enctype="multipart/form-data">
+        <h2>Cadastrar Novo Jogo</h2>
+        
+        <!-- SEARCH FIELD WITH AUTOCOMPLETE -->
+        <div class="search-container">
+            <label for="game-search">Buscar Jogo:</label>
+            <input 
+                type="text" 
+                id="game-search" 
+                placeholder="Digite o nome do jogo..."
+                autocomplete="off"
+            >
+            <div class="autocomplete-list" id="autocomplete-list"></div>
+        </div>
+
+        <form method="post" enctype="multipart/form-data" id="game-form">
             {% csrf_token %}
             <table>
                 {{ form.as_table}}
             </table>
-
-            <input type="submit" value="Add Jogo" class="btn btn-primary"/>
+            <input type="submit" value="Adicionar Jogo" class="btn btn-primary"/>
         </form>
     </div>
+
+    <script>
+        const searchInput = document.getElementById('game-search');
+        const autocompleteList = document.getElementById('autocomplete-list');
+        let debounceTimer;
+
+        // Listen for typing
+        searchInput.addEventListener('input', function() {
+            clearTimeout(debounceTimer);
+            const query = this.value.trim();
+
+            // Only search if 2+ characters
+            if (query.length < 2) {
+                autocompleteList.classList.remove('show');
+                return;
+            }
+
+            // Debounce: wait 300ms before making API call
+            debounceTimer = setTimeout(() => {
+                fetch(`/api/search/?q=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        displayResults(data.results);
+                    })
+                    .catch(error => console.error('Error:', error));
+            }, 300);
+        });
+
+        function displayResults(results) {
+            autocompleteList.innerHTML = '';
+
+            if (results.length === 0) {
+                autocompleteList.classList.remove('show');
+                return;
+            }
+
+            results.forEach(game => {
+                const item = document.createElement('div');
+                item.className = 'autocomplete-item';
+                item.innerHTML = `
+                    ${game.cover_url ? `<img src="${game.cover_url}" alt="${game.name}">` : '<div style="width: 40px; height: 60px; background: #333; border-radius: 3px;"></div>'}
+                    <div class="autocomplete-item-text">
+                        <div class="autocomplete-item-title">${game.name}</div>
+                        <div class="autocomplete-item-year">${game.year || 'Unknown year'}</div>
+                    </div>
+                `;
+
+                item.addEventListener('click', () => {
+                    // Pre-fill the form with selected game
+                    searchInput.value = game.name;
+                    
+                    // Set hidden fields (if you add them to form)
+                    // This example just fills the title field
+                    const titleField = document.querySelector('input[name="title"]');
+                    if (titleField) {
+                        titleField.value = game.name;
+                    }
+
+                    autocompleteList.classList.remove('show');
+                });
+
+                autocompleteList.appendChild(item);
+            });
+
+            autocompleteList.classList.add('show');
+        }
+
+        // Close autocomplete when clicking outside
+        document.addEventListener('click', function(e) {
+            if (e.target !== searchInput) {
+                autocompleteList.classList.remove('show');
+            }
+        });
+    </script>
 {% endblock %}

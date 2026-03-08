@@ -1,98 +1,142 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <style>
-    .game-card {
-      background-color: #1a1a1a;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
-      border: 1px solid #333333;
-      border-radius: 10px;
-      overflow: hidden;
-      text-align: center;
-      transition: all 0.3s ease;
-      max-width: 500px;
-      margin: 20px auto 20px;
-    }
+<style>
+  .game-detail {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 30px;
+    background-color: #1a1a1a;
+    border: 1px solid #333333;
+    border-radius: 8px;
+  }
 
-    .game-card:hover {
-      cursor: pointer;
-      box-shadow: 0 4px 15px rgba(0, 150, 199, 0.3);
-      transform: translateY(-2px);
-      border-color: #0096c7;
-    }
+  .game-detail h1 {
+    color: #ffffff;
+    margin: 0 0 20px 0;
+  }
 
-    .game-cover {
-      width: 100%;
-      aspect-ratio: 2/3;
-      object-fit: cover;
-      display: block;
-      background: #2a2a2a;
-    }
+  .game-cover {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+    display: block;
+    border-radius: 8px;
+    margin: 20px 0;
+  }
 
-    .game-card h2 {
-      font-size: 1.5rem;
-      margin: 10px;
-      color: #ffffff;
-    }
+  .game-info {
+    margin: 30px 0;
+    color: #b0b0b0;
+  }
 
-    .game-card p {
-      font-size: 1rem;
-      margin-bottom: 10px;
-      color: #b0b0b0;
-    }
+  .info-row {
+    margin: 15px 0;
+    padding: 10px 0;
+    border-bottom: 1px solid #333333;
+  }
 
-    .buttons-container {
-      display: flex;
-      justify-content: center;
-      margin-top: 20px;
-      margin-bottom: 20px;
-    }
+  .info-label {
+    color: #777;
+    font-size: 0.9rem;
+    display: block;
+    margin-bottom: 5px;
+  }
 
-    .btn {
-      display: inline-block;
-      background-color: #0096c7;
-      color: #fff;
-      border: none;
-      padding: 10px 20px;
-      font-size: 16px;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: background-color 0.3s ease-in-out;
-      margin: 0 10px;
-      text-decoration: none !important;
-    }
+  .info-value {
+    color: #0096c7;
+    font-size: 1.1rem;
+    font-weight: 500;
+  }
 
-    .btn:hover {
-      background-color: #32bbe8;
-    }
+  .action-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 30px;
+  }
 
-    .btn-danger {
-      background-color: #d9534f;
-      text-decoration: none !important;
-    }
+  .btn {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 1rem;
+    text-align: center;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    display: block;
+  }
 
-    .btn-danger:hover {
-      background-color: #ff6b6b;
-    }
+  .btn-primary {
+    background-color: #0096c7;
+    color: white;
+  }
 
-    .error-message {
-      color: #ff6b6b;
-      font-size: 14px;
-      margin-top: 5px;
-    }
+  .btn-primary:hover {
+    background-color: #32bbe8;
+  }
 
-    a {
-      text-decoration: none !important;
-    }
-  </style>
-  <div class="game-card">
-      {% if object.photo %}
-        <img class="game-cover" src="{{ object.photo.url }}" alt="{{ object.title }} - {{ object.console }}">
-      {% else %}
-        <img class="game-cover" src="https://via.placeholder.com/300x450?text=No+Image" alt="{{ object.title }} - {{ object.console }}">
-      {% endif %}
-      <h2>{{ object.title }}</h2>
-      <p><strong>Console:</strong> {{ object.console }}</p>
-      <p><strong>Ano de lançamento:</strong> {{ object.release_year }}</p>
+  .btn-danger {
+    background-color: #d9534f;
+    color: white;
+  }
+
+  .btn-danger:hover {
+    background-color: #ff6b6b;
+  }
+
+  .btn-back {
+    background-color: #444444;
+    color: white;
+    margin-bottom: 20px;
+  }
+
+  .btn-back:hover {
+    background-color: #555555;
+  }
+</style>
+
+<div class="game-detail">
+  <a href="{% url 'game_list' %}" class="btn btn-back">← Voltar para Lista</a>
+
+  <h1>{{ object.title }}</h1>
+
+  {% if object.photo_url %}
+    <img src="{{ object.photo_url }}" alt="{{ object.title }}" class="game-cover">
+  {% endif %}
+
+  <div class="game-info">
+    <div class="info-row">
+      <span class="info-label">Console</span>
+      <span class="info-value">{{ object.console }}</span>
+    </div>
+
+    <div class="info-row">
+      <span class="info-label">Status</span>
+      <span class="info-value">{{ object.status }}</span>
+    </div>
+
+    {% if object.rating %}
+    <div class="info-row">
+      <span class="info-label">Avaliação</span>
+      <span class="info-value">{{ object.rating }}/10 ⭐</span>
+    </div>
+    {% endif %}
+
+    {% if object.release_year %}
+    <div class="info-row">
+      <span class="info-label">Ano de Lançamento</span>
+      <span class="info-value">{{ object.release_year }}</span>
+    </div>
+    {% endif %}
   </div>
+
+  <div class="action-buttons">
+    <a href="{% url 'edit_game' object.pk %}" class="btn btn-primary">✏️ Editar</a>
+    <a href="{% url 'delete_game' object.pk %}" class="btn btn-danger">🗑️ Deletar</a>
+  </div>
+</div>
+
 {% endblock %}

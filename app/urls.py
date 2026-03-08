@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from games.views import GameListView, NewGameCreateView, GameDetailView, landing_page
+from games.views import GameListView, NewGameCreateView, GameDetailView, GameUpdateView, GameDeleteView, landing_page, search_games, search_game_covers, update_game_cover, beaten_games
 from accounts.views import login_view, register_view, logout_view
 
 urlpatterns = [
@@ -26,10 +26,16 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('games/', GameListView.as_view(), name='game_list'),
     path('game/<int:pk>/', GameDetailView.as_view(), name='game_detail'),
+    path('game/<int:pk>/edit/', GameUpdateView.as_view(), name='edit_game'),
+    path('game/<int:pk>/delete/', GameDeleteView.as_view(), name='delete_game'),
     path('game_log/', NewGameCreateView.as_view(), name='new_gameplay'),
     path('login/', login_view, name='login'),
     path('logout/', logout_view, name='logout'),
-    path('register/', register_view, name='register')
+    path('register/', register_view, name='register'),
+    path('api/search/',search_games, name='search_games'),
+    path('api/search-covers/', search_game_covers, name='search_game_covers'),
+    path('api/update-cover/', update_game_cover, name='update_game_cover'),
+    path('api/beaten-games/', beaten_games, name='beaten_games'),
 ]
 
 if settings.DEBUG:

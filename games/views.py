@@ -3,6 +3,8 @@ from django.views.generic import ListView, CreateView, DetailView, UpdateView, D
 from django.urls import reverse_lazy
 from .models import Game
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Q
+from datetime import datetime
 
 class GameListView(LoginRequiredMixin, ListView):
     model = Game
@@ -15,23 +17,25 @@ class GameListView(LoginRequiredMixin, ListView):
         tab = self.request.GET.get('tab', 'played')
         search = self.request.GET.get('search', '').strip()
         
-        # Filter by tab
+        # Filter by tab (case-insensitive, strip whitespace)
         if tab == 'playing':
-            games = games.filter(status__status='jogando')
+            games = games.filter(status__status__iexact='jogando')
         elif tab == 'played':
-            games = games.filter(status__status__in=['platinado', 'historia completa'])
+            games = games.filter(status__status__iexact='platinado') | games.filter(status__status__iexact='historia completa')
         elif tab == 'by_year':
-            year = self.request.GET.get('year')
-            if year:
+            year = self.request.GET.get('year', '').strip()
+            if year:  # Only filter if year is provided and not empty
                 games = games.filter(release_year=year)
+            # else: show all games when no year is selected
         elif tab == 'by_console':
-            console_id = self.request.GET.get('console')
-            if console_id:
+            console_id = self.request.GET.get('console', '').strip()
+            if console_id:  # Only filter if console_id is provided and not empty
                 games = games.filter(console_id=console_id)
+            # else: show all games when no console is selected
         elif tab == 'next':
-            games = games.filter(status__status='na lista de proximo')
+            games = games.filter(status__status__iexact='na lista de proximo')
         
-        # Apply search filter
+        # Apply search filter on top of tab filter
         if search:
             games = games.filter(title__icontains=search)
         
@@ -45,10 +49,27 @@ class GameListView(LoginRequiredMixin, ListView):
         context['active_tab'] = self.request.GET.get('tab', 'played')
         context['search_query'] = self.request.GET.get('search', '').strip()
         
-        # Tab counts
-        context['count_playing'] = user_games.filter(status__status='jogando').count()
-        context['count_played'] = user_games.filter(status__status__in=['platinado', 'historia completa']).count()
-        context['count_next'] = user_games.filter(status__status='na lista de proximo').count()
+        # Tab counts (case-insensitive)
+        context['count_playing'] = user_games.filter(status__status__iexact='jogando').count()
+        context['count_played'] = (user_games.filter(status__status__iexact='platinado') | user_games.filter(status__status__iexact='historia completa')).count()
+        context['count_next'] = user_games.filter(status__status__iexact='na lista de proximo').count()
+        
+        # Statistics for dashboard (case-insensitive)
+        context['total_games'] = (user_games.filter(status__status__iexact='platinado') | user_games.filter(status__status__iexact='historia completa')).count()
+        context['current_year'] = datetime.now().year
+        context['games_played_this_year'] = (
+            user_games.filter(status__status__iexact='platinado', release_year=datetime.now().year) | 
+            user_games.filter(status__status__iexact='historia completa', release_year=datetime.now().year)
+        ).count()
+        context['games_not_started'] = user_games.exclude(
+            status__status__iexact='platinado'
+        ).exclude(
+            status__status__iexact='historia completa'
+        ).exclude(
+            status__status__iexact='jogando'
+        ).exclude(
+            status__status__iexact='na lista de proximo'
+        ).count()
         
         # Get unique years and consoles for filters
         context['years'] = sorted(

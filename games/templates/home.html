@@ -2,28 +2,51 @@
 
 {% block content %}
 <style>
-    .top-bar {
+    .stats-container {
+        background-color: #1a1a1a;
+        border-bottom: 1px solid #333333;
+        padding: 30px 20px;
+        display: flex;
+        justify-content: center;
+        gap: 60px;
+        text-align: center;
+    }
+
+    .stat-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .stat-number {
+        font-size: 3em;
+        font-weight: bold;
+        color: #0096c7;
+        line-height: 1;
+    }
+
+    .stat-label {
+        font-size: 0.9em;
+        color: #b0b0b0;
+    }
+
+    .search-bar-container {
         background-color: #1a1a1a;
         border-bottom: 1px solid #333333;
         padding: 0;
         display: flex;
-        justify-content: space-between;
+        justify-content: center;
         align-items: center;
-        gap: 20px;
-        padding: 10px 20px;
-    }
-
-    .top-bar-left {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        flex: 1;
     }
 
     .search-form {
         display: flex;
         gap: 8px;
         align-items: center;
+        width: 100%;
+        max-width: 400px;
+        padding: 15px 20px;
     }
 
     .search-form input[type="text"] { 
@@ -32,6 +55,7 @@
         border: 1px solid #333333;
         background-color: #2a2a2a;
         color: #ffffff;
+        flex: 1;
         min-width: 200px;
     }
 
@@ -50,23 +74,6 @@
         background-color: #32bbe8;
     }
 
-    .user-info {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        white-space: nowrap;
-    }
-
-    .user-info a, .user-info span {
-        color: #b0b0b0;
-        font-size: 14px;
-        text-decoration: none;
-    }
-
-    .user-info a:hover {
-        color: #0096c7;
-    }
-
     /* Tab bar styles */
     .tabs-container {
         background-color: #1a1a1a;
@@ -74,8 +81,38 @@
         padding: 0;
         display: flex;
         gap: 0;
-        overflow-x: auto;
         margin: 0;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        width: 100%;
+    }
+
+    .tabs-left {
+        display: flex;
+        gap: 0;
+        order: 1;
+    }
+
+    .tabs-center {
+        display: flex;
+        justify-content: center;
+        order: 3;
+        width: 100%;
+        min-height: 50px;
+    }
+
+    .tabs-center .search-form {
+        padding: 10px 20px;
+        margin: 0;
+    }
+
+    .tabs-right {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        padding-right: 20px;
+        order: 2;
     }
 
     .tab-link {
@@ -112,27 +149,26 @@
         font-weight: bold;
     }
 
-    .filter-section {
-        background-color: #151515;
-        padding: 15px 20px;
+    .filter-group {
         display: flex;
-        gap: 20px;
+        gap: 10px;
         align-items: center;
-        border-bottom: 1px solid #333333;
     }
 
-    .filter-section label {
+    .filter-group label {
         color: #b0b0b0;
-        font-size: 14px;
+        font-size: 13px;
+        white-space: nowrap;
     }
 
-    .filter-section select {
-        padding: 8px 12px;
+    .filter-group select {
+        padding: 6px 12px;
         border-radius: 4px;
         border: 1px solid #333333;
         background-color: #2a2a2a;
         color: #ffffff;
         cursor: pointer;
+        font-size: 13px;
     }
 
     .game-grid {
@@ -188,100 +224,138 @@
         text-decoration: none;
     }
 
+    @media (max-width: 1024px) {
+        .stats-container {
+            gap: 30px;
+            padding: 20px 10px;
+        }
+
+        .stat-number {
+            font-size: 2em;
+        }
+
+        .tabs-right {
+            padding-right: 10px;
+            gap: 8px;
+        }
+    }
+
     @media (max-width: 768px) {
-        .top-bar {
+        .stats-container {
+            flex-direction: column;
+            gap: 12px;
+            padding: 15px 10px;
+        }
+
+        .stat-number {
+            font-size: 1.8em;
+        }
+
+        .tabs-container {
             flex-direction: column;
             align-items: stretch;
         }
 
-        .tabs-container {
-            overflow-x: auto;
-        }
-
-        .filter-section {
+        .tabs-left {
+            width: 100%;
             flex-wrap: wrap;
         }
 
-        .search-form input[type="text"] {
-            min-width: 150px;
+        .tabs-right {
+            width: 100%;
+            padding: 10px 20px;
+            justify-content: space-between;
+        }
+
+        .search-form {
+            max-width: 100%;
         }
     }
 </style>
 
-<!-- Top Bar with Search and User Info -->
-<div class="top-bar">
-    <div class="top-bar-left">
+<!-- Statistics Dashboard -->
+<div class="stats-container">
+    <div class="stat-item">
+        <div class="stat-number">{{ total_games|stringformat:"03d" }}</div>
+        <div class="stat-label">Total Games Played</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-number">{{ games_played_this_year|stringformat:"03d" }}</div>
+        <div class="stat-label">Played in {{ current_year }}</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-number">{{ games_not_started|stringformat:"03d" }}</div>
+        <div class="stat-label">Games Not Started</div>
+    </div>
+</div>
+
+<!-- Tabs and Filters -->
+<div class="tabs-container">
+    <div class="tabs-left">
+        <a href="?tab=playing{% if search_query %}&search={{ search_query }}{% endif %}" class="tab-link {% if active_tab == 'playing' %}active{% endif %}">
+            Jogando
+            <span class="tab-counter">{{ count_playing }}</span>
+        </a>
+        <a href="?tab=played{% if search_query %}&search={{ search_query }}{% endif %}" class="tab-link {% if active_tab == 'played' %}active{% endif %}">
+            Jogados
+            <span class="tab-counter">{{ count_played }}</span>
+        </a>
+        <a href="?tab=by_year{% if search_query %}&search={{ search_query }}{% endif %}" class="tab-link {% if active_tab == 'by_year' %}active{% endif %}">
+            Por Ano
+        </a>
+        <a href="?tab=by_console{% if search_query %}&search={{ search_query }}{% endif %}" class="tab-link {% if active_tab == 'by_console' %}active{% endif %}">
+            Por Console
+        </a>
+        <a href="?tab=next{% if search_query %}&search={{ search_query }}{% endif %}" class="tab-link {% if active_tab == 'next' %}active{% endif %}">
+            Próximos
+            <span class="tab-counter">{{ count_next }}</span>
+        </a>
+    </div>
+    
+    <div class="tabs-center">
         <form method="GET" action="{% url 'game_list' %}" class="search-form">
-            {% if active_tab %}
+            {% if active_tab and active_tab != 'played' %}
                 <input type="hidden" name="tab" value="{{ active_tab }}">
             {% endif %}
             <input type="text" name="search" placeholder="Buscar jogo..." value="{{ search_query }}">
             <button type="submit">Buscar</button>
         </form>
     </div>
-    <div class="user-info">
-        {% if user.is_authenticated %}
-            <span>Olá, <strong>{{ user.username }}</strong></span>
-            <a href="{% url 'new_gameplay' %}">Cadastrar Gameplay</a>
-            <a href="{% url 'logout' %}">Sair</a>
-        {% else %}
-            <a href="{% url 'login' %}">Login</a>
+    
+    <div class="tabs-right">
+        {% if active_tab == 'by_year' %}
+        <form method="GET" action="{% url 'game_list' %}" style="display: flex; gap: 10px; align-items: center;">
+            <input type="hidden" name="tab" value="by_year">
+            {% if search_query %}<input type="hidden" name="search" value="{{ search_query }}">{% endif %}
+            <div class="filter-group">
+                <label for="year-filter">Seleccionar Ano:</label>
+                <select name="year" id="year-filter" onchange="this.form.submit()">
+                    <option value="">Todos os anos</option>
+                    {% for year in years %}
+                        <option value="{{ year }}" {% if year|stringformat:"s" == selected_year %}selected{% endif %}>{{ year }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </form>
+        {% endif %}
+
+        {% if active_tab == 'by_console' %}
+        <form method="GET" action="{% url 'game_list' %}" style="display: flex; gap: 10px; align-items: center;">
+            <input type="hidden" name="tab" value="by_console">
+            {% if search_query %}<input type="hidden" name="search" value="{{ search_query }}">{% endif %}
+            <div class="filter-group">
+                <label for="console-filter">Seleccionar Console:</label>
+                <select name="console" id="console-filter" onchange="this.form.submit()">
+                    <option value="">Todos os consoles</option>
+                    {% for console in console_objects %}
+                        <option value="{{ console.id }}" {% if console.id|stringformat:"s" == selected_console %}selected{% endif %}>{{ console.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </form>
         {% endif %}
     </div>
 </div>
-
-<!-- Tabs -->
-<div class="tabs-container">
-    <a href="?tab=playing{% if search_query %}&search={{ search_query }}{% endif %}" class="tab-link {% if active_tab == 'playing' %}active{% endif %}">
-        Jogando
-        <span class="tab-counter">{{ count_playing }}</span>
-    </a>
-    <a href="?tab=played{% if search_query %}&search={{ search_query }}{% endif %}" class="tab-link {% if active_tab == 'played' %}active{% endif %}">
-        Jogados
-        <span class="tab-counter">{{ count_played }}</span>
-    </a>
-    <a href="?tab=by_year{% if search_query %}&search={{ search_query }}{% endif %}" class="tab-link {% if active_tab == 'by_year' %}active{% endif %}">
-        Por Ano
-    </a>
-    <a href="?tab=by_console{% if search_query %}&search={{ search_query }}{% endif %}" class="tab-link {% if active_tab == 'by_console' %}active{% endif %}">
-        Por Console
-    </a>
-    <a href="?tab=next{% if search_query %}&search={{ search_query }}{% endif %}" class="tab-link {% if active_tab == 'next' %}active{% endif %}">
-        Próximos
-        <span class="tab-counter">{{ count_next }}</span>
-    </a>
-</div>
-
-<!-- Filters for specific tabs -->
-{% if active_tab == 'by_year' %}
-<div class="filter-section">
-    <form method="GET" action="{% url 'game_list' %}" style="display: flex; gap: 15px; align-items: center; flex: 1;">
-        <input type="hidden" name="tab" value="by_year">
-        {% if search_query %}<input type="hidden" name="search" value="{{ search_query }}">{% endif %}
-        <label for="year-filter">Selecionar Ano:</label>
-        <select name="year" id="year-filter" onchange="this.form.submit()">
-            <option value="">Todos os anos</option>
-            {% for year in years %}
-                <option value="{{ year }}" {% if year|stringformat:"s" == selected_year %}selected{% endif %}>{{ year }}</option>
-            {% endfor %}
-        </select>
-    </form>
-</div>
-{% elif active_tab == 'by_console' %}
-<div class="filter-section">
-    <form method="GET" action="{% url 'game_list' %}" style="display: flex; gap: 15px; align-items: center; flex: 1;">
-        <input type="hidden" name="tab" value="by_console">
-        {% if search_query %}<input type="hidden" name="search" value="{{ search_query }}">{% endif %}
-        <label for="console-filter">Selecionar Console:</label>
-        <select name="console" id="console-filter" onchange="this.form.submit()">
-            <option value="">Todos os consoles</option>
-            {% for console in console_objects %}
-                <option value="{{ console.id }}" {% if console.id|stringformat:"s" == selected_console %}selected{% endif %}>{{ console.name }}</option>
-            {% endfor %}
-        </select>
-    </form>
-</div>
-{% endif %}
 
 <!-- Games Grid -->
 <div class="game-grid">

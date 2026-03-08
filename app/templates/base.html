@@ -31,11 +31,13 @@
     nav {
         background-color: #1a1a1a;
         color: #fff;
-        height: 50px;
+        min-height: 50px;
         display: flex;
         justify-content: space-between;
         align-items: center;
         border-bottom: 1px solid #333333;
+        padding: 0 20px;
+        gap: 20px;
     }
 
     nav ul {
@@ -43,18 +45,23 @@
         margin: 0;
         padding: 0;
         display: flex;
+        gap: 20px;
     }
 
     nav ul li {
-        margin: 0 10px;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
     }
 
     nav ul li a {
         color: #b0b0b0;
         text-decoration: none;
-        font-size: 16px;
-        padding: 15px;
+        font-size: 14px;
+        padding: 10px 15px;
         transition: all 0.3s ease;
+        border-radius: 4px;
     }
 
     nav ul li a:hover {
@@ -69,6 +76,33 @@
 
     nav ul li.active a:hover {
         background-color: #32bbe8;
+    }
+
+    .nav-user-section {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        white-space: nowrap;
+        margin-left: auto;
+    }
+
+    .nav-user-section span {
+        color: #b0b0b0;
+        font-size: 14px;
+    }
+
+    .nav-user-section a {
+        color: #b0b0b0;
+        text-decoration: none;
+        font-size: 14px;
+        padding: 8px 15px;
+        transition: all 0.3s ease;
+        border-radius: 4px;
+    }
+
+    .nav-user-section a:hover {
+        background-color: #0096c7;
+        color: #ffffff;
     }
 
     button, input[type="submit"] {
@@ -99,22 +133,23 @@
 <body>
   <header>
     <nav>
-      <ul>
+      <div style="display: flex; align-items: center; gap: 20px;">
+        <ul>
+          <li><a href="{% url 'game_list' %}">Games</a></li>
+          {% if user.is_authenticated %}
+          <li><a href="{% url 'new_gameplay' %}">Cadastrar Gameplay</a></li>
+          {% endif %}
+        </ul>
+      </div>
+      <div class="nav-user-section">
         {% if user.is_authenticated %}
-        <li> Ola, {{ user.username }}</li>
-        <li><a href="{% url 'new_gameplay' %}">Cadastrar Gameplay</a></li>
+        <span>Olá, <strong>{{ user.username }}</strong></span>
+        <a href="{% url 'logout' %}">Sair</a>
+        {% else %}
+        <a href="{% url 'register' %}">Cadastrar-se</a>
+        <a href="{% url 'login' %}">Login</a>
         {% endif %}
-        {% if not user.is_authenticated %}
-        <li><a href="{% url 'register' %}">Cadastrar-se</a></li>
-        <li><a href="{% url 'login' %}">Login</a></li>
-        {% endif %}
-        
-        <li><a href="{% url 'game_list' %}">Games</a></li>  
-
-        {% if user.is_authenticated %}
-          <li><a href="{% url 'logout' %}">Sair</a></li>
-        {% endif %}
-      </ul>
+      </div>
     </nav>
   </header>
 

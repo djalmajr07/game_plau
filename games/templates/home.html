@@ -2,10 +2,11 @@
 
 {% block content %}
 <style>
+    /* Statistics Dashboard */
     .stats-container {
         background-color: #1a1a1a;
         border-bottom: 1px solid #333333;
-        padding: 15px 20px;
+        padding: 20px 20px;
         display: flex;
         justify-content: center;
         gap: 60px;
@@ -16,76 +17,31 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 10px;
+        gap: 3px;
     }
 
     .stat-number {
         font-size: 2.2em;
         font-weight: bold;
-        color: #0096c7;
+        color: #32bbe8;
         line-height: 1;
     }
 
     .stat-label {
         font-size: 0.8em;
         color: #b0b0b0;
+        text-transform: uppercase;
+        letter-spacing: 1px;
     }
 
-    .stat-item {
-        gap: 3px;
-    }
-
-    .search-bar-container {
+    /* Navigation Header (Tabs only) */
+    .nav-header-row {
         background-color: #1a1a1a;
         border-bottom: 1px solid #333333;
-        padding: 0;
         display: flex;
-        justify-content: center;
+        justify-content: flex-start;
         align-items: center;
-    }
-
-    .search-form {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-        width: 100%;
-        max-width: 400px;
-        padding: 10px 20px;
-    }
-
-    .search-form input[type="text"] { 
-        padding: 8px 12px; 
-        border-radius: 4px; 
-        border: 1px solid #333333;
-        background-color: #2a2a2a;
-        color: #ffffff;
-        flex: 1;
-        min-width: 200px;
-    }
-
-    .search-form button { 
-        background-color: #0096c7; 
-        color: white; 
-        border: none; 
-        padding: 8px 16px; 
-        border-radius: 4px; 
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-        font-size: 14px;
-    }
-
-    .search-form button:hover {
-        background-color: #32bbe8;
-    }
-
-    /* Tab bar styles */
-    .tabs-container {
-        background-color: #1a1a1a;
-        padding: 0;
-        display: flex;
-        gap: 0;
-        margin: 0;
-        border-bottom: 1px solid #333333;
+        padding: 0 20px;
     }
 
     .tabs-left {
@@ -94,17 +50,18 @@
     }
 
     .tab-link {
-        padding: 12px 15px;
+        padding: 15px 20px;
         cursor: pointer;
         color: #b0b0b0;
         text-decoration: none;
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 8px;
         border-bottom: 3px solid transparent;
         transition: all 0.3s ease;
         white-space: nowrap;
         font-size: 13px;
+        font-weight: 600;
     }
 
     .tab-link:hover {
@@ -119,24 +76,38 @@
     }
 
     .tab-counter {
-        background-color: #0096c7;
-        color: white;
+        background-color: #333;
+        color: #0096c7;
         border-radius: 12px;
         padding: 2px 8px;
-        font-size: 12px;
+        font-size: 11px;
         font-weight: bold;
+        border: 1px solid #0096c7;
+    }
+
+    .tab-link.active .tab-counter {
+        background-color: #0096c7;
+        color: white;
+    }
+
+    /* Filter Bar (Below Tabs) */
+    .filter-bar {
+        background-color: #121212;
+        padding: 12px 20px;
+        border-bottom: 1px solid #333333;
+        display: flex;
+        align-items: center;
     }
 
     .filter-group {
         display: flex;
-        gap: 10px;
+        gap: 12px;
         align-items: center;
     }
 
     .filter-group label {
         color: #b0b0b0;
         font-size: 13px;
-        white-space: nowrap;
     }
 
     .filter-group select {
@@ -146,35 +117,34 @@
         background-color: #2a2a2a;
         color: #ffffff;
         cursor: pointer;
-        font-size: 13px;
+        outline: none;
     }
 
+    /* Game Grid and Cards */
     .game-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 20px;
+        gap: 25px;
+        max-width: 1300px;
         margin: 0 auto;
-        max-width: 1200px;
-        padding: 25px 20px;
-        align-items: start;
+        padding: 30px 20px;
     }
 
     .game-card {
         background-color: #1a1a1a;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.7);
         border-radius: 8px;
         border: 1px solid #333333;
         overflow: hidden;
-        text-align: center;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        height: 100%;
         display: flex;
         flex-direction: column;
-        height: 100%;
     }
 
     .game-card:hover { 
-        transform: scale(1.03);
-        box-shadow: 0 6px 20px rgba(0, 150, 199, 0.3);
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        border-color: #0096c7;
     }
 
     .game-cover {
@@ -182,211 +152,139 @@
         aspect-ratio: 2/3;
         object-fit: cover;
         display: block;
-        background: #2a2a2a;
     }
 
     .card-body { 
-        padding: 12px; 
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start;
+        padding: 15px; 
+        flex: 1; 
+        text-align: center;
     }
 
-    .game-card h2 {
-        font-size: 1rem;
-        margin: 0 0 3px 0;
-        color: #ffffff;
-        line-height: 1.2;
-        min-height: 2.4em;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
+    .card-body h2 {
+        font-size: 0.95rem;
+        color: #fff;
+        margin: 0;
+        line-height: 1.3;
+        font-weight: 600;
     }
 
-    .game-card p {
+    .card-body p {
         font-size: 0.8rem;
-        color: #b0b0b0;
-        margin: 3px 0 0 0;
-    }
-
-    .game-card a {
-        color: inherit;
-        text-decoration: none;
-    }
-
-    @media (max-width: 1024px) {
-        .stats-container {
-            gap: 30px;
-            padding: 20px 10px;
-        }
-
-        .stat-number {
-            font-size: 2em;
-        }
-
-        .tabs-right {
-            padding-right: 10px;
-            gap: 8px;
-        }
+        color: #0096c7;
+        margin-top: 8px;
+        font-weight: 500;
     }
 
     @media (max-width: 768px) {
-        .stats-container {
-            flex-direction: column;
-            gap: 12px;
-            padding: 15px 10px;
-        }
-
-        .stat-number {
-            font-size: 1.8em;
-        }
-
-        .tabs-container {
-            flex-direction: column;
-            align-items: stretch;
-        }
-
-        .tabs-left {
-            width: 100%;
-            flex-wrap: wrap;
-        }
-
-        .tabs-right {
-            width: 100%;
-            padding: 10px 20px;
-            justify-content: space-between;
-        }
-
-        .search-form {
-            max-width: 100%;
-        }
+        .stats-container { gap: 20px; flex-wrap: wrap; }
+        .nav-header-row { overflow-x: auto; }
+        .game-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
     }
 </style>
 
-<!-- Statistics Dashboard -->
 <div class="stats-container">
     <div class="stat-item">
         <div class="stat-number">{{ total_games|stringformat:"03d" }}</div>
-        <div class="stat-label">Total Games Played</div>
+        <div class="stat-label">Total Zerado</div>
     </div>
     <div class="stat-item">
         <div class="stat-number">{{ games_played_this_year|stringformat:"03d" }}</div>
-        <div class="stat-label">Played in {{ current_year }}</div>
+        <div class="stat-label">Jogados em {{ current_year }}</div>
     </div>
     <div class="stat-item">
-        <div class="stat-number">{{ games_not_started|stringformat:"03d" }}</div>
-        <div class="stat-label">Games Not Started</div>
+        <div class="stat-number">{{ count_next|stringformat:"03d" }}</div>
+        <div class="stat-label">No Backlog</div>
     </div>
 </div>
 
-<!-- Tabs and Filters -->
-<div style="background-color: #1a1a1a; border-bottom: 2px solid #333333;">
-    <!-- Top tabs row -->
-    <div class="tabs-container">
-        <div class="tabs-left">
-            <a href="?tab=playing{% if search_query %}&search={{ search_query }}{% endif %}" class="tab-link {% if active_tab == 'playing' %}active{% endif %}">
-                Jogando
-                <span class="tab-counter">{{ count_playing }}</span>
-            </a>
-            <a href="?tab=played{% if search_query %}&search={{ search_query }}{% endif %}" class="tab-link {% if active_tab == 'played' %}active{% endif %}">
-                Jogados
-                <span class="tab-counter">{{ count_played }}</span>
-            </a>
-            <a href="?tab=by_year{% if search_query %}&search={{ search_query }}{% endif %}" class="tab-link {% if active_tab == 'by_year' %}active{% endif %}">
-                Por Ano
-            </a>
-            <a href="?tab=by_console{% if search_query %}&search={{ search_query }}{% endif %}" class="tab-link {% if active_tab == 'by_console' %}active{% endif %}">
-                Por Console
-            </a>
-            <a href="?tab=next{% if search_query %}&search={{ search_query }}{% endif %}" class="tab-link {% if active_tab == 'next' %}active{% endif %}">
-                Próximos
-                <span class="tab-counter">{{ count_next }}</span>
-            </a>
+<div class="nav-header-row">
+    <div class="tabs-left">
+        <a href="?tab=playing{% if search_query %}&search={{ search_query }}{% endif %}" class="tab-link {% if active_tab == 'playing' %}active{% endif %}">
+            Jogando <span class="tab-counter">{{ count_playing }}</span>
+        </a>
+        <a href="?tab=played{% if search_query %}&search={{ search_query }}{% endif %}" class="tab-link {% if active_tab == 'played' %}active{% endif %}">
+            Zerados <span class="tab-counter">{{ count_played }}</span>
+        </a>
+        <a href="?tab=by_year{% if search_query %}&search={{ search_query }}{% endif %}" class="tab-link {% if active_tab == 'by_year' %}active{% endif %}">Por Ano</a>
+        <a href="?tab=by_console{% if search_query %}&search={{ search_query }}{% endif %}" class="tab-link {% if active_tab == 'by_console' %}active{% endif %}">Por Console</a>
+        <a href="?tab=next{% if search_query %}&search={{ search_query }}{% endif %}" class="tab-link {% if active_tab == 'next' %}active{% endif %}">
+            Próximos <span class="tab-counter">{{ count_next }}</span>
+        </a>
+    </div>
+</div>
+
+{% if active_tab == 'by_year' or active_tab == 'by_console' %}
+<div class="filter-bar">
+    {% if active_tab == 'by_year' %}
+    <form method="GET" action="{% url 'game_list' %}">
+        <input type="hidden" name="tab" value="by_year">
+        {% if search_query %}<input type="hidden" name="search" value="{{ search_query }}">{% endif %}
+        <div class="filter-group">
+            <label for="year-filter">Filtrar por Ano:</label>
+            <select name="year" id="year-filter" onchange="this.form.submit()">
+                <option value="">Todos os anos</option>
+                {% for year in years %}
+                    <option value="{{ year }}" {% if year|stringformat:"s" == selected_year %}selected{% endif %}>{{ year }}</option>
+                {% endfor %}
+            </select>
         </div>
-    </div>
-    
-    <!-- Bottom search and filters row -->
-    <div style="display: flex; justify-content: center; align-items: center; padding: 10px 20px; gap: 20px; flex-wrap: wrap;">
-        <!-- Search bar centered -->
-        <form method="GET" action="{% url 'game_list' %}" class="search-form" style="flex: 0 1 300px;">
-            {% if active_tab and active_tab != 'played' %}
-                <input type="hidden" name="tab" value="{{ active_tab }}">
-            {% endif %}
-            <input type="text" name="search" placeholder="Buscar jogo..." value="{{ search_query }}" style="flex: 1;">
-            <button type="submit">Buscar</button>
-        </form>
-        
-        <!-- Filters on the right -->
-        {% if active_tab == 'by_year' %}
-        <form method="GET" action="{% url 'game_list' %}" style="display: flex; gap: 10px; align-items: center;">
-            <input type="hidden" name="tab" value="by_year">
-            {% if search_query %}<input type="hidden" name="search" value="{{ search_query }}">{% endif %}
-            <div class="filter-group">
-                <label for="year-filter">Seleccionar Ano:</label>
-                <select name="year" id="year-filter" onchange="this.form.submit()">
-                    <option value="">Todos os anos</option>
-                    {% for year in years %}
-                        <option value="{{ year }}" {% if year|stringformat:"s" == selected_year %}selected{% endif %}>{{ year }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-        </form>
-        {% endif %}
+    </form>
+    {% endif %}
 
-        {% if active_tab == 'by_console' %}
-        <form method="GET" action="{% url 'game_list' %}" style="display: flex; gap: 10px; align-items: center;">
-            <input type="hidden" name="tab" value="by_console">
-            {% if search_query %}<input type="hidden" name="search" value="{{ search_query }}">{% endif %}
-            <div class="filter-group">
-                <label for="console-filter">Seleccionar Console:</label>
-                <select name="console" id="console-filter" onchange="this.form.submit()">
-                    <option value="">Todos os consoles</option>
-                    {% for console in console_objects %}
-                        <option value="{{ console.id }}" {% if console.id|stringformat:"s" == selected_console %}selected{% endif %}>{{ console.name }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-        </form>
-        {% endif %}
-    </div>
+    {% if active_tab == 'by_console' %}
+    <form method="GET" action="{% url 'game_list' %}">
+        <input type="hidden" name="tab" value="by_console">
+        {% if search_query %}<input type="hidden" name="search" value="{{ search_query }}">{% endif %}
+        <div class="filter-group">
+            <label for="console-filter">Filtrar por Console:</label>
+            <select name="console" id="console-filter" onchange="this.form.submit()">
+                <option value="">Todos os consoles</option>
+                {% for console in console_objects %}
+                    <option value="{{ console.id }}" {% if console.id|stringformat:"s" == selected_console %}selected{% endif %}>{{ console.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </form>
+    {% endif %}
 </div>
+{% endif %}
 
-<!-- Games Grid -->
 <div class="game-grid">
     {% for game in games %}
     <a href="{% url 'game_detail' game.pk %}" style="text-decoration: none;">
         <div class="game-card">
             {% if game.photo_url %}
                 <img class="game-cover" src="{{ game.photo_url }}" alt="{{ game.title }}">
+            {% elif game.photo %}
+                <img class="game-cover" src="{{ game.photo.url }}" alt="{{ game.title }}">
             {% else %}
-                <img class="game-cover" src="https://via.placeholder.com/300x450?text=No+Cover" alt="No Cover">
+                <img class="game-cover" src="https://via.placeholder.com/300x450?text=Sem+Capa" alt="No Cover">
             {% endif %}
             <div class="card-body">
                 <h2>{{ game.title }}</h2>
-                <p>{{ game.console.name }} {% if game.release_year %}- {{ game.release_year }}{% endif %}</p>
+                <p>{{ game.console.name }}</p>
             </div>
         </div>
     </a>
     {% empty %}
-    <p style="grid-column: 1/-1; text-align: center; color: #b0b0b0;">Nenhum jogo encontrado.</p>
+    <p style="grid-column: 1/-1; text-align: center; color: #b0b0b0; padding: 100px 0;">
+        Nenhum jogo encontrado nesta categoria.
+    </p>
     {% endfor %}
 </div>
 
 {% if is_paginated %}
-<div style="text-align: center; padding: 20px;">
+<div style="text-align: center; padding: 40px 20px; border-top: 1px solid #333;">
     {% if page_obj.has_previous %}
-        <a href="?page=1{% if active_tab %}&tab={{ active_tab }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}" style="margin: 5px;">Primeira</a>
-        <a href="?page={{ page_obj.previous_page_number }}{% if active_tab %}&tab={{ active_tab }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}" style="margin: 5px;">Anterior</a>
+        <a href="?page=1{% if active_tab %}&tab={{ active_tab }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}" style="color: #0096c7; text-decoration: none; margin-right: 10px;">&laquo; Primeira</a>
+        <a href="?page={{ page_obj.previous_page_number }}{% if active_tab %}&tab={{ active_tab }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}" style="color: #0096c7; text-decoration: none; margin-right: 15px;">Anterior</a>
     {% endif %}
     
-    <span style="color: #b0b0b0;">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+    <span style="color: #666; font-size: 14px;">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
     
     {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}{% if active_tab %}&tab={{ active_tab }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}" style="margin: 5px;">Próxima</a>
-        <a href="?page={{ page_obj.paginator.num_pages }}{% if active_tab %}&tab={{ active_tab }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}" style="margin: 5px;">Última</a>
+        <a href="?page={{ page_obj.next_page_number }}{% if active_tab %}&tab={{ active_tab }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}" style="color: #0096c7; text-decoration: none; margin-left: 15px;">Próxima</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}{% if active_tab %}&tab={{ active_tab }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}" style="color: #0096c7; text-decoration: none; margin-left: 10px;">Última &raquo;</a>
     {% endif %}
 </div>
 {% endif %}

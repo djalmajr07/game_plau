@@ -125,6 +125,7 @@
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.9);
     display: flex;
     flex-direction: column;
+    overflow: visible;
   }
 
   .modal-content h2 {
@@ -139,48 +140,61 @@
     font-weight: 500;
   }
 
-  .modal-content input[type="text"],
-  .modal-content input[type="url"] {
-    width: 100%;
-    padding: 10px;
-    margin: 5px 0 15px 0;
-    border: 1px solid #333333;
-    border-radius: 4px;
-    background-color: #2a2a2a;
-    color: #ffffff;
-    box-sizing: border-box;
-  }
-
   .search-input-wrapper {
     position: relative;
+    margin-bottom: 15px;
+  }
+
+  #coverSearch {
+    width: 100%;
+    padding: 10px;
+    background-color: #2a2a2a;
+    border: 1px solid #333333;
+    border-radius: 4px;
+    color: #ffffff;
+    font-size: 14px;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+  }
+
+  #coverSearch:focus {
+    border-color: #0096c7;
+    outline: none;
+    box-shadow: 0 0 8px rgba(0, 150, 199, 0.3);
   }
 
   .cover-results {
-    margin-top: 10px;
-    flex: 1;
-    max-height: calc(80vh - 250px);
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: #2a2a2a;
+    border: 1px solid #0096c7;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    max-height: 250px;
     overflow-y: auto;
-    border: 1px solid #333333;
-    border-radius: 4px;
-    background-color: #0f0f0f;
+    display: none;
+    z-index: 1001;
+    box-shadow: 0 4px 15px rgba(0, 150, 199, 0.2);
+  }
+
+  .cover-results.show {
+    display: block;
   }
 
   .cover-item {
-    padding: 10px;
+    padding: 12px;
     border-bottom: 1px solid #333333;
     cursor: pointer;
-    transition: background-color 0.2s ease;
     display: flex;
-    gap: 10px;
     align-items: center;
+    gap: 12px;
+    transition: background-color 0.2s ease;
   }
 
   .cover-item:hover {
-    background-color: #1a1a1a;
-  }
-
-  .cover-item.selected {
-    background-color: #0096c7;
+    background-color: #333333;
   }
 
   .cover-thumbnail {
@@ -194,7 +208,17 @@
   .cover-info {
     flex: 1;
     color: #b0b0b0;
-    font-size: 0.9rem;
+  }
+
+  .cover-title {
+    color: #ffffff;
+    font-weight: 500;
+    margin-bottom: 3px;
+  }
+
+  .cover-year {
+    font-size: 0.85rem;
+    color: #777;
   }
 
   .no-results {
@@ -234,19 +258,10 @@
     color: white;
   }
 
-  .modal-buttons .btn-cancel:hover {
-    background-color: #555555;
-  }
-
   .btn-secondary {
     background-color: #666666;
     color: white;
   }
-
-  .btn-secondary:hover {
-    background-color: #777777;
-  }
-
 </style>
 
 <div class="game-detail">
@@ -254,9 +269,10 @@
 
   <h1>{{ object.title }}</h1>
 
-  {% if object.photo_url %}
-    <img src="{{ object.photo_url }}" alt="{{ object.title }}" class="game-cover">
-  {% endif %}
+  <img src="{{ object.photo_url|default:'https://via.placeholder.com/300x450?text=Sem+Capa' }}" 
+       alt="{{ object.title }}" 
+       class="game-cover" 
+       id="mainGameCover">
 
   <div class="game-info">
     <div class="info-row">
@@ -298,21 +314,20 @@
   </div>
 </div>
 
-<!-- Edit Cover Modal -->
 <div id="editCoverModal" class="modal">
   <div class="modal-content">
     <h2>Editar Capa do Jogo</h2>
-    <form id="coverForm" method="POST" action="{% url 'edit_game' object.pk %}">
+    <form id="coverForm">
       {% csrf_token %}
       <label for="coverSearch">Pesquisar Capa:</label>
       <div class="search-input-wrapper">
-        <input type="text" id="coverSearch" placeholder="Pesquise por capas..." autocomplete="off">
+        <input type="text" id="coverSearch" placeholder="Digite o nome do jogo..." autocomplete="off">
+        <div class="cover-results" id="coverResults"></div>
       </div>
-      <div id="coverResults" class="cover-results" style="display: none;"></div>
-      <input type="hidden" id="selectedCoverUrl" name="photo_url" value="{{ object.photo_url }}">
+      <input type="hidden" id="selectedCoverUrl" value="{{ object.photo_url }}">
       
       <div class="modal-buttons">
-        <button type="submit" class="btn-save" id="saveCoverBtn" disabled>Salvar</button>
+        <button type="submit" class="btn-save" id="saveCoverBtn">Salvar</button>
         <button type="button" class="btn-cancel" onclick="closeEditCoverModal()">Cancelar</button>
       </div>
     </form>
@@ -320,19 +335,21 @@
 </div>
 
 <script>
+// --- MODAL CONTROLS ---
 function openEditCoverModal() {
-  document.getElementById('editCoverModal').classList.add('active');
-  document.getElementById('coverSearch').focus();
-  document.getElementById('coverSearch').value = '';
-  document.getElementById('coverResults').style.display = 'none';
-  document.getElementById('saveCoverBtn').disabled = true;
+  const modal = document.getElementById('editCoverModal');
+  const searchInput = document.getElementById('coverSearch');
+  modal.classList.add('active');
+  searchInput.focus();
+  searchInput.value = '';
+  document.getElementById('coverResults').classList.remove('show');
 }
 
 function closeEditCoverModal() {
   document.getElementById('editCoverModal').classList.remove('active');
+  document.getElementById('coverResults').classList.remove('show');
 }
 
-// Close modal when clicking outside of it
 window.onclick = function(event) {
   const modal = document.getElementById('editCoverModal');
   if (event.target == modal) {
@@ -340,59 +357,128 @@ window.onclick = function(event) {
   }
 }
 
-// Search for covers
-document.getElementById('coverSearch').addEventListener('input', async function() {
+// --- COVER SEARCH LOGIC ---
+const coverSearch = document.getElementById('coverSearch');
+const coverResults = document.getElementById('coverResults');
+let debounceTimer;
+
+coverSearch.addEventListener('input', function() {
+  clearTimeout(debounceTimer);
   const query = this.value.trim();
-  const resultsDiv = document.getElementById('coverResults');
-  
-  if (!query) {
-    resultsDiv.style.display = 'none';
+
+  if (query.length < 2) {
+    coverResults.classList.remove('show');
     return;
   }
 
-  try {
-    const response = await fetch(`/api/search-covers/?title=${encodeURIComponent(query)}`);
-    const data = await response.json();
-    
-    if (data.covers && data.covers.length > 0) {
-      let html = '';
-      data.covers.forEach(cover => {
-        const imageUrl = cover.url || '';
-        const type = cover.type || 'cover';
-        const title = `{{ object.title }} (${type})`;
-        html += `
-          <div class="cover-item" onclick="selectCover('${imageUrl.replace(/'/g, "\\'")}')">
-            ${imageUrl ? `<img src="${imageUrl}" alt="${title}" class="cover-thumbnail">` : '<div class="cover-thumbnail" style="background-color: #333;"></div>'}
-            <div class="cover-info">${type === 'cover' ? 'Capa Principal' : 'Arte Alternativa'}</div>
-          </div>
-        `;
+  debounceTimer = setTimeout(() => {
+    fetch(`/api/search-covers/?title=${encodeURIComponent(query)}`)
+      .then(response => response.json())
+      .then(data => displayCoverResults(data.results || []))
+      .catch(error => {
+        console.error('Error:', error);
+        coverResults.innerHTML = '<div class="no-results">Erro ao buscar capas</div>';
+        coverResults.classList.add('show');
       });
-      resultsDiv.innerHTML = html;
-      resultsDiv.style.display = 'block';
-    } else {
-      resultsDiv.innerHTML = '<div class="no-results">Nenhuma capa encontrada</div>';
-      resultsDiv.style.display = 'block';
-    }
-  } catch (error) {
-    console.error('Erro ao buscar capas:', error);
-    resultsDiv.innerHTML = '<div class="no-results">Erro ao buscar capas</div>';
-    resultsDiv.style.display = 'block';
-  }
+  }, 300);
 });
 
-// Select a cover
-function selectCover(imageUrl) {
-  if (!imageUrl) return;
-  
-  document.getElementById('selectedCoverUrl').value = imageUrl;
-  document.getElementById('saveCoverBtn').disabled = false;
-  
-  // Visual feedback
-  document.querySelectorAll('.cover-item').forEach(item => {
-    item.classList.remove('selected');
-  });
-  event.currentTarget.classList.add('selected');
-}
-</script>
+function displayCoverResults(results) {
+  coverResults.innerHTML = '';
+  if (results.length === 0) {
+    coverResults.innerHTML = '<div class="no-results">Nenhuma capa encontrada</div>';
+    coverResults.classList.add('show');
+    return;
+  }
 
+  results.forEach(game => {
+    const item = document.createElement('div');
+    item.className = 'cover-item';
+    
+    let yearText = 'Ano desconhecido';
+    if (game.year) {
+      try {
+        const timestamp = parseInt(game.year);
+        // Handle IGDB Unix timestamps
+        yearText = (timestamp > 100000) ? new Date(timestamp * 1000).getFullYear() : game.year;
+      } catch (e) {
+        yearText = game.year || 'Ano desconhecido';
+      }
+    }
+    
+    item.innerHTML = `
+      ${game.url ? `<img src="${game.url}" alt="${game.name}" class="cover-thumbnail" onerror="this.style.display='none'">` : '<div style="width: 40px; height: 60px; background: #333; border-radius: 3px;"></div>'}
+      <div class="cover-info">
+        <div class="cover-title">${game.name}</div>
+        <div class="cover-year">${yearText}</div>
+      </div>
+    `;
+
+    item.addEventListener('click', () => {
+      document.getElementById('selectedCoverUrl').value = game.url;
+      document.getElementById('coverSearch').value = game.name;
+      coverResults.classList.remove('show');
+    });
+
+    coverResults.appendChild(item);
+  });
+  coverResults.classList.add('show');
+}
+
+// --- SILENT SAVE LOGIC ---
+document.getElementById('coverForm').addEventListener('submit', function(e) {
+  e.preventDefault(); // Stop standard submission/redirect
+  
+  const saveBtn = document.getElementById('saveCoverBtn');
+  const newUrl = document.getElementById('selectedCoverUrl').value;
+  
+  if (!newUrl) {
+    alert("Por favor, selecione uma capa.");
+    return;
+  }
+
+  saveBtn.disabled = true;
+  saveBtn.innerText = "Salvando...";
+
+  // Sending data as JSON to match your update_game_cover view
+  const payload = {
+    game_id: "{{ object.pk }}",
+    new_cover_url: newUrl
+  };
+
+  fetch("{% url 'update_game_cover' %}", {
+    method: 'POST',
+    body: JSON.stringify(payload),
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': '{{ csrf_token }}'
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      // Update the image src on the page instantly
+      document.getElementById('mainGameCover').src = data.new_url;
+      closeEditCoverModal();
+    } else {
+      alert("Erro: " + (data.error || "Erro ao salvar a capa."));
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert("Erro na conexão com o servidor.");
+  })
+  .finally(() => {
+    saveBtn.disabled = false;
+    saveBtn.innerText = "Salvar";
+  });
+});
+
+// Close search results when clicking outside
+document.addEventListener('click', function(e) {
+  if (e.target !== coverSearch && !coverResults.contains(e.target)) {
+    coverResults.classList.remove('show');
+  }
+});
+</script>
 {% endblock %}

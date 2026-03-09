@@ -3,28 +3,46 @@
 {% block title %}Welcome to Game Plau{% endblock %}
 
 {% block content %}
-  <style>
-    .game-cover {
-        width: 100%;
-        aspect-ratio: 2/3;
-        object-fit: cover;
-        display: block;
-        background: #2a2a2a;
+<style>
+    /* Uniform Grid for Featured Collection */
+    .featured-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 25px;
+        margin-top: 30px;
     }
 
     .game-card-featured {
+        background: #1a1a1a;
         border: 1px solid #333333;
         border-radius: 8px;
         overflow: hidden;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-        background: #1a1a1a;
-        position: relative;
+        display: flex;
+        flex-direction: column;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
+        height: 100%; /* Ensures all cards in a row match height */
+        position: relative;
+        text-decoration: none;
     }
 
     .game-card-featured:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 6px 15px rgba(0, 150, 199, 0.2);
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0, 150, 199, 0.2);
+    }
+
+    /* Enforces same size for all images */
+    .image-wrapper {
+        width: 100%;
+        aspect-ratio: 2 / 3; /* Standard poster ratio */
+        background-color: #2a2a2a;
+        overflow: hidden;
+    }
+
+    .game-cover {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* Fills the box completely, removing grey bars */
+        display: block;
     }
 
     .console-badge {
@@ -35,93 +53,80 @@
         color: white;
         padding: 4px 10px;
         border-radius: 4px;
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         font-weight: bold;
+        z-index: 2;
     }
 
     .game-info {
         padding: 15px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
 
     .game-title {
-        margin: 0 0 5px 0;
-        font-size: 1.2rem;
+        margin: 0;
+        font-size: 1.1rem;
         color: #ffffff;
+        /* Truncate long titles to 2 lines for uniformity */
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
     }
 
-    .game-year {
+    .view-details {
+        margin-top: 12px;
         font-size: 0.85rem;
-        color: #b0b0b0;
-        margin-bottom: 10px;
-    }
-
-    .game-footer {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .game-rating {
-        color: #ffa500;
-        font-weight: bold;
-    }
-
-    .view-link {
-        font-size: 0.9rem;
         color: #0096c7;
-        text-decoration: none;
         font-weight: bold;
-        transition: color 0.3s ease;
     }
+</style>
 
-    .view-link:hover {
-        color: #32bbe8;
-    }
-  </style>
-
-  <section style="padding: 2rem; max-width: 1200px; margin: 0 auto; font-family: sans-serif;">
+<section style="padding: 2rem; max-width: 1200px; margin: 0 auto; font-family: sans-serif;">
     <div style="text-align: center; margin-bottom: 3rem;">
-        <h1 style="font-size: 2.5rem; color: #ffffff;">Welcome to Game Plau</h1>
+        <h1 style="font-size: 2.5rem; color: #ffffff; margin-bottom: 0.5rem;">Welcome to Game Plau</h1>
         
         {% if user.is_authenticated %}
-          <p style="color: #b0b0b0;">Olá, <strong style="color: #0096c7;">{{ user.username }}</strong>! Ready for a new session?</p>
-          <div style="margin-top: 1rem;">
-              <a href="{% url 'game_list' %}" style="padding: 10px 20px; background: #0096c7; color: white; text-decoration: none; border-radius: 5px; display: inline-block; transition: background-color 0.3s ease; margin-right: 10px;" onmouseover="this.style.backgroundColor='#32bbe8'" onmouseout="this.style.backgroundColor='#0096c7'">See My Library</a>
-              <a href="{% url 'new_gameplay' %}" style="padding: 10px 20px; background: #0096c7; color: white; text-decoration: none; border-radius: 5px; display: inline-block; transition: background-color 0.3s ease;" onmouseover="this.style.backgroundColor='#32bbe8'" onmouseout="this.style.backgroundColor='#0096c7'">Register New Game</a>
-          </div>
+            <p style="color: #b0b0b0;">Olá, <strong style="color: #0096c7;">{{ user.username }}</strong>! Ready for a new session?</p>
+            <div style="margin-top: 1.5rem; display: flex; justify-content: center; gap: 15px;">
+                <a href="{% url 'game_list' %}" style="padding: 10px 25px; background: #0096c7; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; transition: background 0.3s;" onmouseover="this.style.backgroundColor='#32bbe8'" onmouseout="this.style.backgroundColor='#0096c7'">See My Library</a>
+                <a href="{% url 'new_gameplay' %}" style="padding: 10px 25px; background: #0096c7; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; transition: background 0.3s;" onmouseover="this.style.backgroundColor='#32bbe8'" onmouseout="this.style.backgroundColor='#0096c7'">Register New Game</a>
+            </div>
         {% else %}
-          <p style="color: #b0b0b0;">Join the community! Please <a href="{% url 'login' %}" style="color: #0096c7; text-decoration: none;">login</a> or <a href="{% url 'register' %}" style="color: #0096c7; text-decoration: none;">register</a> to get started.</p>
+            <p style="color: #b0b0b0;">Join the community! Please <a href="{% url 'login' %}" style="color: #0096c7; text-decoration: none;">login</a> or <a href="{% url 'register' %}" style="color: #0096c7; text-decoration: none;">register</a> to get started.</p>
         {% endif %}
     </div>
 
-    <h2 style="border-bottom: 1px solid #333333; padding-bottom: 10px; color: #ffffff;">Featured Collection</h2>
+    <h2 style="border-bottom: 1px solid #333333; padding-bottom: 10px; color: #ffffff; font-size: 1.5rem;">Featured Collection</h2>
     
-    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; margin-top: 20px;">
-        
+    <div class="featured-grid">
         {% for game in games %}
-        <div class="game-card-featured">
-            <div class="console-badge">{{ game.console.name }}</div>
+            <a href="{% url 'game_detail' game.pk %}" class="game-card-featured">
+                <div class="console-badge">{{ game.console.name }}</div>
 
-            {% if game.photo %}
-                <img class="game-cover" src="{{ game.photo.url }}" alt="{{ game.title }}">
-            {% else %}
-                <img class="game-cover" src="https://via.placeholder.com/300x450?text=No+Image" alt="No Image">
-            {% endif %}
-
-            <div class="game-info">
-                <h3 class="game-title">{{ game.title }}</h3>
-                <p class="game-year">Released: {{ game.release_year|default:"N/A" }}</p>
-                
-                <div class="game-footer">
-                    <span class="game-rating">★ {{ game.rating|default:"0" }}/10</span>
-                    <a href="{% url 'game_detail' game.pk %}" class="view-link">View Details →</a>
+                <div class="image-wrapper">
+                    {% if game.photo_url %}
+                        <img class="game-cover" src="{{ game.photo_url }}" alt="{{ game.title }}">
+                    {% elif game.photo %}
+                        <img class="game-cover" src="{{ game.photo.url }}" alt="{{ game.title }}">
+                    {% else %}
+                        <div style="height: 100%; display: flex; align-items: center; justify-content: center; background: #2a2a2a; color: #b0b0b0;">
+                            No Image
+                        </div>
+                    {% endif %}
                 </div>
-            </div>
-        </div>
-        {% empty %}
-        <p style="grid-column: 1 / -1; text-align: center; color: #b0b0b0; padding: 2rem;">No games have been featured by the admin yet.</p>
-        {% endfor %}
 
+                <div class="game-info">
+                    <h3 class="game-title">{{ game.title }}</h3>
+                    <div class="view-details">View Details →</div>
+                </div>
+            </a>
+        {% empty %}
+            <p style="grid-column: 1 / -1; text-align: center; color: #b0b0b0; padding: 4rem;">No games have been featured yet.</p>
+        {% endfor %}
     </div>
-  </section>
+</section>
 {% endblock %}
